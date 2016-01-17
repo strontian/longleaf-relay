@@ -1,9 +1,9 @@
 package strawn.longleaf.relay.client;
 
-import com.dstrawn.datamsgs.netty.json.JSONHandler;
-import com.dstrawn.datamsgs.netty.json.JSONPipelineFactory;
-import com.dstrawn.datamsgs.netty.json.JSONPublisher;
-import com.dstrawn.datamsgs.pojos.JSONWrapper;
+import strawn.longleaf.relay.netty.JSONHandler;
+import strawn.longleaf.relay.netty.JSONPipelineFactory;
+import strawn.longleaf.relay.netty.JSONPublisher;
+import strawn.longleaf.relay.messages.RelayMessage;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -73,8 +73,8 @@ public abstract class NettyJSONPublisher extends JSONHandler implements JSONPubl
      */
     public void publishJSON(Object o, String key) {
         String s = g.toJson(o);
-        JSONWrapper jw = new JSONWrapper();
-        jw.key = key;
+        RelayMessage jw = new RelayMessage();
+        jw.channelKey = key;
         jw.messageType = "DATA";
         jw.payload = s;
         String jString = g.toJson(jw);
@@ -86,8 +86,8 @@ public abstract class NettyJSONPublisher extends JSONHandler implements JSONPubl
      * @param key - the name of the stream to subscribe
      */
     public void subData(String key) {
-        JSONWrapper jw = new JSONWrapper();
-        jw.key = key;
+        RelayMessage jw = new RelayMessage();
+        jw.channelKey = key;
         jw.messageType = "SUBSCRIBE";
         jw.payload = "";
         String jString = g.toJson(jw);

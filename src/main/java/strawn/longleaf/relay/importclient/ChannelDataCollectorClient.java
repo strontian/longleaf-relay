@@ -1,6 +1,6 @@
 package strawn.longleaf.relay.importclient;
 
-import com.dstrawn.datamsgs.pojos.JSONWrapper;
+import strawn.longleaf.relay.messages.RelayMessage;
 import strawn.longleaf.relay.client.NettyJSONPublisher;
 import strawn.longleaf.relay.exceptions.AlreadySubscribedException;
 import strawn.longleaf.relay.exceptions.DataNotFoundException;
@@ -15,19 +15,19 @@ import org.jboss.netty.channel.MessageEvent;
  *
  * @author David Strawn
  */
-public class HongDataImport extends NettyJSONPublisher {
+public class ChannelDataCollectorClient extends NettyJSONPublisher {
     
-    Map<String, HongCollection> data;
+    Map<String, ChannelDataCollection> data;
     Gson g;
     
-    public HongDataImport() {
+    public ChannelDataCollectorClient() {
         g = new Gson();
         data = new HashMap();
     }
     
     public <T> List<T> getValues(String key, Class<T> clazz) throws DataNotFoundException {
         ArrayList<T> ret = new ArrayList();
-        HongCollection hc = data.get(key);
+        ChannelDataCollection hc = data.get(key);
         if(hc == null) {
             throw new DataNotFoundException(key);
         }
@@ -38,8 +38,8 @@ public class HongDataImport extends NettyJSONPublisher {
     }
     
     @Override
-    public void handleJSON(JSONWrapper jw, MessageEvent e) {
-        HongCollection hc = data.get(jw.key);
+    public void handleJSON(RelayMessage jw, MessageEvent e) {
+        ChannelDataCollection hc = data.get(jw.channelKey);
         if(jw.messageType.equals("END_REFRESH")) {
             hc.completed = true;
         }else {
@@ -56,17 +56,17 @@ public class HongDataImport extends NettyJSONPublisher {
     }
     
     public void collectStream(String channelName) throws AlreadySubscribedException {
-        HongCollection hc = data.get(channelName);
+        ChannelDataCollection hc = data.get(channelName);
         if(hc != null) {
-            throw new AlreadySubscribedException();
+            throw new AlreadySubscribedException(channelName);
         }
-        hc = new HongCollection(channelName);
+        hc = new ChannelDataCollection(channelName);
         data.put(channelName, hc);
         subData(channelName);
     }
     
     public boolean collectionComplete() {
-        for(HongCollection hc : data.values()) {
+        for(ChannelDataCollection hc : data.values()) {
             if(!hc.isCompleted()) {
                 return false;
             }

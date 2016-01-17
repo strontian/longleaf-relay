@@ -1,9 +1,9 @@
-package strawn.longleaf.relay.test;
+package strawn.longleaf.relay.examples;
 
-import com.dstrawn.datamsgs.pojos.JSONWrapper;
 import strawn.longleaf.relay.HongConfig;
 import strawn.longleaf.relay.client.NettyJSONPublisher;
 import org.jboss.netty.channel.MessageEvent;
+import strawn.longleaf.relay.messages.RelayMessage;
 
 /**
  *
@@ -12,8 +12,8 @@ import org.jboss.netty.channel.MessageEvent;
 public class TestConnector extends NettyJSONPublisher {
 
     @Override
-    public void handleJSON(JSONWrapper jw, MessageEvent e) {
-        System.out.println("Got JSON, key:" + jw.key + ", type:" + jw.messageType + ", payload:" + jw.payload);
+    public void handleJSON(RelayMessage rm, MessageEvent e) {
+        System.out.println("Got JSON, key:" + rm.key + ", type:" + rm.messageType + ", payload:" + rm.payload);
     }
 
     public void onConnection() {

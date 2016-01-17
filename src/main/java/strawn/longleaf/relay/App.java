@@ -1,14 +1,17 @@
 package strawn.longleaf.relay;
 
-import strawn.longleaf.relay.tasks.CycleWriter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import strawn.longleaf.relay.server.RelayServer;
-import strawn.longleaf.relay.tasks.StopCycleNotificationTask;
 import strawn.longleaf.relay.tasks.TimeNotificationTask;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Properties;
 import java.util.TimeZone;
 import java.util.Timer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * 
@@ -18,10 +21,32 @@ public class App {
     
     public static void main(String[] args) {
         
-        Properties config = new Properties();
+        RelayServer relayServer = new RelayServer();
+        InputStream inputStream = null;
         
-        RelayServer hsh = new RelayServer();
-        hsh.connect(HongConfig.port);
+        Properties serverConfig = new Properties();
+        try {
+            String serverConfigFileName = "serverconfig.properties";
+            inputStream = relayServer.getClass().getResourceAsStream(serverConfigFileName);
+            if (inputStream != null) {
+                serverConfig.load(inputStream);
+                int serverPort = Integer.parseInt(serverConfig.getProperty("port"));
+                relayServer.connect(serverPort);
+            } else {
+                throw new FileNotFoundException("server config file:'" + serverConfigFileName + "' not found.");
+            }
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
+        } finally {
+            if(inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException ex) {
+                    System.out.println("Could not close config file InputStream");
+                }
+            }   
+        }
+        
         Timer t = new Timer();
         t.schedule(new CycleWriter(hsh), 15000, 90000);
         

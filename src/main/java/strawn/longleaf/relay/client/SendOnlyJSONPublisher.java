@@ -1,7 +1,7 @@
 package strawn.longleaf.relay.client;
 
-import com.dstrawn.datamsgs.pojos.JSONWrapper;
 import org.jboss.netty.channel.MessageEvent;
+import strawn.longleaf.relay.messages.RelayMessage;
 
 /**
  *
@@ -10,7 +10,7 @@ import org.jboss.netty.channel.MessageEvent;
 public class SendOnlyJSONPublisher extends NettyJSONPublisher {
 
     @Override
-    public void handleJSON(JSONWrapper jw, MessageEvent e) {
+    public void handleJSON(RelayMessage rm, MessageEvent e) {
         
     }
 

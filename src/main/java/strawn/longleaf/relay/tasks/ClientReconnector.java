@@ -7,11 +7,11 @@ import java.util.TimerTask;
  *
  * @author David Strawn
  */
-public class HongReconnector extends TimerTask {
+public class ClientReconnector extends TimerTask {
 
     protected Connector c;
     
-    public HongReconnector(Connector c) {
+    public ClientReconnector(Connector c) {
         this.c = c;
     }
     

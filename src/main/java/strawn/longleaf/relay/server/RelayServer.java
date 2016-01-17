@@ -1,10 +1,5 @@
 package strawn.longleaf.relay.server;
 
-import com.dstrawn.datamsgs.netty.json.JSONHandler;
-import com.dstrawn.datamsgs.netty.json.JSONPipelineFactory;
-import com.dstrawn.datamsgs.pojos.JSONCommand;
-import com.dstrawn.datamsgs.pojos.JSONWrapper;
-import com.dstrawn.datamsgs.utils.TimeTools;
 import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -14,6 +9,9 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import strawn.longleaf.relay.messages.RelayMessage;
+import strawn.longleaf.relay.netty.JSONHandler;
+import strawn.longleaf.relay.netty.JSONPipelineFactory;
 
 /**
  *
@@ -55,19 +53,19 @@ public class RelayServer extends JSONHandler {
     }
     
     @Override
-    public void handleJSON(JSONWrapper jw, MessageEvent e) {
+    public void handleJSON(RelayMessage jw, MessageEvent e) {
         if(jw.messageType.equals("SUBSCRIBE")) {
-            addSub(e.getChannel(), jw.key);
+            addSub(e.getChannel(), jw.channelKey);
         }else if(jw.messageType.equals("DATA")) {
-            cacheAndPublish(jw.key, (String)e.getMessage());
+            cacheAndPublish(jw.channelKey, (String)e.getMessage());
         }else if(jw.messageType.equals("END_DATA")) {
-            cacheAndPublish(jw.key, (String)e.getMessage());
+            cacheAndPublish(jw.channelKey, (String)e.getMessage());
         }else if(jw.messageType.equals("FLUSH")) {
-            flushStream(jw.key);
+            flushStream(jw.channelKey);
         }else if(jw.messageType.equals("PUBLISH")) {
-            publishData(jw.key, (String)e.getMessage());
+            publishData(jw.channelKey, (String)e.getMessage());
         }else if(jw.messageType.equals("REPLACE")) {
-            replaceData(jw.key, jw.replaceKey, (String)e.getMessage());
+            replaceData(jw.channelKey, jw.replaceKey, (String)e.getMessage());
         }
     }
     
@@ -89,7 +87,6 @@ public class RelayServer extends JSONHandler {
     
     protected void publishData(String key, String datum) {
         Set<Channel> group = subs.get(key);
-        //TODO: Replace this with an iterator, so we can remove disconnected Channels...
         if(group != null) {
             Iterator<Channel> i = group.iterator();
             while(i.hasNext()) {
@@ -133,14 +130,14 @@ public class RelayServer extends JSONHandler {
     }
     
     protected String getEndString(String key) {
-        JSONWrapper jw = getEnd(key);
+        RelayMessage jw = getEnd(key);
         String s = g.toJson(jw);
         return s + "\n";
     }
 
-    protected JSONWrapper getEnd(String key) {
-        JSONWrapper jw = new JSONWrapper();
-        jw.key = key;
+    protected RelayMessage getEnd(String key) {
+        RelayMessage jw = new RelayMessage();
+        jw.channelKey = key;
         jw.messageType = "END_REFRESH";
         return jw;
     }
@@ -153,25 +150,6 @@ public class RelayServer extends JSONHandler {
             datasets.put(key, data);
         }
         data.add(datum);
-    }
-    
-    
-    public void writeCycle(int index) {
-        
-        JSONWrapper jw = new JSONWrapper();
-        JSONCommand jc = new JSONCommand();
-        
-        jc.commandName = "CYCLE";
-        jc.destSymbol = "BROADCAST";
-        jc.int1 = index;
-        
-        jw.key = "COMMAND";
-        jw.payload = g.toJson(jc);
-        jw.messageType = "PUBLISH";
-        
-        String s = g.toJson(jw);
-        publishData("CYCLES", s);
-        
     }
     
     public void writeTime() {

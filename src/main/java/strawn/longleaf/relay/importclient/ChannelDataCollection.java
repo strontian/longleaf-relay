@@ -7,13 +7,13 @@ import java.util.List;
  *
  * @author David Strawn
  */
-public class HongCollection {
+public class ChannelDataCollection {
     
     public String key;
     public boolean completed;
     public List<String> values;
     
-    public HongCollection(String key) {
+    public ChannelDataCollection(String key) {
         values = new ArrayList();
         completed = false;
         this.key = key;
