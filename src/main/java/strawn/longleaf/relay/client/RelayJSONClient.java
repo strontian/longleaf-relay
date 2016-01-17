@@ -16,14 +16,14 @@ import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
  *
  * @author David Strawn
  */
-public abstract class NettyJSONPublisher extends JSONHandler implements JSONPublisher, Connector {
+public abstract class RelayJSONClient extends JSONHandler implements JSONPublisher, Connector {
     
     protected ClientBootstrap bootstrap;
     protected Channel publishChannel;
     protected String host;
     protected int port;
     
-    public NettyJSONPublisher(Executor boss, Executor work) {
+    public RelayJSONClient(Executor boss, Executor work) {
         bootstrap = new ClientBootstrap(new NioClientSocketChannelFactory(boss, work, 1));
         bootstrap.setPipelineFactory(new JSONPipelineFactory(this));
         bootstrap.setOption("tcpNoDelay", "true");
@@ -31,7 +31,7 @@ public abstract class NettyJSONPublisher extends JSONHandler implements JSONPubl
         bootstrap.setOption("keepAlive", true);
     }
     
-    public NettyJSONPublisher() {
+    public RelayJSONClient() {
         bootstrap = new ClientBootstrap(new NioClientSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool(), 1));
         bootstrap.setPipelineFactory(new JSONPipelineFactory(this));
         bootstrap.setOption("tcpNoDelay", "true");

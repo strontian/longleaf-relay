@@ -1,19 +1,22 @@
 package strawn.longleaf.relay.examples;
 
-import strawn.longleaf.relay.HongConfig;
-import strawn.longleaf.relay.client.NettyJSONPublisher;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import strawn.longleaf.relay.client.RelayJSONClient;
 import org.jboss.netty.channel.MessageEvent;
 import strawn.longleaf.relay.messages.RelayMessage;
+import strawn.longleaf.relay.util.RelayConfigLoader;
 
 /**
  *
- * @author dks
+ * @author David Strawn
  */
-public class TestConnector extends NettyJSONPublisher {
+public class TestConnector extends RelayJSONClient {
 
     @Override
     public void handleJSON(RelayMessage rm, MessageEvent e) {
-        System.out.println("Got JSON, key:" + rm.key + ", type:" + rm.messageType + ", payload:" + rm.payload);
+        System.out.println("Got JSON, channel:" + rm.channelKey + ", type:" + rm.messageType + ", payload:" + rm.payload);
     }
 
     public void onConnection() {
@@ -22,7 +25,14 @@ public class TestConnector extends NettyJSONPublisher {
     
     public static void main(String args[]) {
         TestConnector tc = new TestConnector();
-        tc.configAndConnect(HongConfig.host, HongConfig.port);
+        RelayConfigLoader configLoader = new RelayConfigLoader();
+        try {
+            configLoader.loadClientConfig();
+        } catch (IOException ex) {
+            System.out.println("Could not load config file:" + ex.getMessage());
+            return;
+        }
+        tc.configAndConnect(configLoader.getHost(), configLoader.getPort());
         tc.subData("MISSING_SYMBOLS");
     }
 

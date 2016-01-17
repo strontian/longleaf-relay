@@ -15,7 +15,7 @@ import strawn.longleaf.relay.netty.JSONPipelineFactory;
 
 /**
  *
- * HongServer is a simple JSON storage and reflection server
+ * RelayServer is a simple JSON storage and reflection server
  * 
  * @author David Strawn
  */
@@ -151,51 +151,5 @@ public class RelayServer extends JSONHandler {
         }
         data.add(datum);
     }
-    
-    public void writeTime() {
-        
-        
-        JSONWrapper jw = new JSONWrapper();
-        JSONCommand jc = new JSONCommand();
-        
-        long time = System.currentTimeMillis();
-        
-        jc.commandName = "NOTIFY_TIME";
-        jc.destSymbol = "BROADCAST";
-        
-        jc.int1 = TimeTools.epochToMillisUntilClose(time, TimeTools.getMidnightMillisInEpochSLOW(TimeTools.getCurrentDate()));
-        
-        System.out.println("Writing time:" + jc.int1);
-        
-        jw.messageType = "PUBLISH";
-        jw.key = "TIME_NOTES";
-        jw.payload = g.toJson(jc);
-        
-        String s = g.toJson(jw);
-        publishData("TIME_NOTES", s);
-        
-    }
-
-    public void writeStopSycle() {
-        JSONWrapper jw = new JSONWrapper();
-        JSONCommand jc = new JSONCommand();
-        
-        long time = System.currentTimeMillis();
-        
-        jc.commandName = "STOP_CYCLE";
-        jc.destSymbol = "BROADCAST";
-        
-        
-        System.out.println("Writing stop_cycle.");
-        
-        jw.messageType = "PUBLISH";
-        jw.key = "COMMAND";
-        jw.payload = g.toJson(jc);
-        
-        String s = g.toJson(jw);
-        publishData("CYCLES", s);
-        
-    }
-    
     
 }

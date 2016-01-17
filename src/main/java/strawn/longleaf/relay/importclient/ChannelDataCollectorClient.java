@@ -1,7 +1,7 @@
 package strawn.longleaf.relay.importclient;
 
 import strawn.longleaf.relay.messages.RelayMessage;
-import strawn.longleaf.relay.client.NettyJSONPublisher;
+import strawn.longleaf.relay.client.RelayJSONClient;
 import strawn.longleaf.relay.exceptions.AlreadySubscribedException;
 import strawn.longleaf.relay.exceptions.DataNotFoundException;
 import com.google.gson.Gson;
@@ -15,7 +15,7 @@ import org.jboss.netty.channel.MessageEvent;
  *
  * @author David Strawn
  */
-public class ChannelDataCollectorClient extends NettyJSONPublisher {
+public class ChannelDataCollectorClient extends RelayJSONClient {
     
     Map<String, ChannelDataCollection> data;
     Gson g;

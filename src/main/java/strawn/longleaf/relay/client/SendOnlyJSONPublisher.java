@@ -7,7 +7,7 @@ import strawn.longleaf.relay.messages.RelayMessage;
  *
  * @author David Strawn
  */
-public class SendOnlyJSONPublisher extends NettyJSONPublisher {
+public class SendOnlyJSONPublisher extends RelayJSONClient {
 
     @Override
     public void handleJSON(RelayMessage rm, MessageEvent e) {
