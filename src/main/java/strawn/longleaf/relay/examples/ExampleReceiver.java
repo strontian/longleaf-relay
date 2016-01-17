@@ -12,7 +12,7 @@ import strawn.longleaf.relay.util.RelayConfigLoader;
  *
  * @author David Strawn
  */
-public class TestConnector extends RelayJSONClient {
+public class ExampleReceiver extends RelayJSONClient {
 
     @Override
     public void handleJSON(RelayMessage rm, MessageEvent e) {
@@ -24,7 +24,7 @@ public class TestConnector extends RelayJSONClient {
     }
     
     public static void main(String args[]) {
-        TestConnector tc = new TestConnector();
+        ExampleReceiver tc = new ExampleReceiver();
         RelayConfigLoader configLoader = new RelayConfigLoader();
         try {
             configLoader.loadClientConfig();
@@ -33,7 +33,7 @@ public class TestConnector extends RelayJSONClient {
             return;
         }
         tc.configAndConnect(configLoader.getHost(), configLoader.getPort());
-        tc.subData("MISSING_SYMBOLS");
+        tc.subData("EXAMPLE_DATA");
     }
 
     public void onFailedConnection() {

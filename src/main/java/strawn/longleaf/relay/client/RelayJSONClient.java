@@ -11,6 +11,7 @@ import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
+import strawn.longleaf.relay.messages.RelayMessageType;
 
 /**
  *
@@ -75,7 +76,7 @@ public abstract class RelayJSONClient extends JSONHandler implements JSONPublish
         String s = g.toJson(o);
         RelayMessage jw = new RelayMessage();
         jw.channelKey = key;
-        jw.messageType = "DATA";
+        jw.messageType = RelayMessageType.DATA;
         jw.payload = s;
         String jString = g.toJson(jw);
         publishChannel.write(jString + "\n");
@@ -88,7 +89,7 @@ public abstract class RelayJSONClient extends JSONHandler implements JSONPublish
     public void subData(String key) {
         RelayMessage jw = new RelayMessage();
         jw.channelKey = key;
-        jw.messageType = "SUBSCRIBE";
+        jw.messageType = RelayMessageType.SUBSCRIBE;
         jw.payload = "";
         String jString = g.toJson(jw);
         publishChannel.write(jString + "\n");

@@ -4,11 +4,12 @@ package strawn.longleaf.relay.messages;
  *
  * @author David Strawn
  */
-public enum RelayMessageTypes {
+public enum RelayMessageType {
     SUBSCRIBE,
     DATA,
     END_DATA,
     FLUSH,
     PUBLISH,
-    REPLACE
+    REPLACE,
+    END_REFRESH
 }

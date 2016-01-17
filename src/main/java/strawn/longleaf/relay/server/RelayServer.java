@@ -10,6 +10,7 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import strawn.longleaf.relay.messages.RelayMessage;
+import strawn.longleaf.relay.messages.RelayMessageType;
 import strawn.longleaf.relay.netty.JSONHandler;
 import strawn.longleaf.relay.netty.JSONPipelineFactory;
 
@@ -54,8 +55,30 @@ public class RelayServer extends JSONHandler {
     
     @Override
     public void handleJSON(RelayMessage jw, MessageEvent e) {
+        switch (jw.messageType) {
+            case SUBSCRIBE:
+                addSubscriber(e.getChannel(), jw.channelKey);
+                break;
+            case DATA:
+                cacheAndPublish(jw.channelKey, (String)e.getMessage());
+                break;
+            case END_DATA:
+                cacheAndPublish(jw.channelKey, (String)e.getMessage());
+                break;
+            case FLUSH:
+                flushStream(jw.channelKey);
+                break;
+            case PUBLISH:
+                publishData(jw.channelKey, (String)e.getMessage());
+                break;
+            case REPLACE:
+                replaceData(jw.channelKey, jw.replaceKey, (String)e.getMessage());
+                break;
+        }
+        
+        /*
         if(jw.messageType.equals("SUBSCRIBE")) {
-            addSub(e.getChannel(), jw.channelKey);
+            addSubscriber(e.getChannel(), jw.channelKey);
         }else if(jw.messageType.equals("DATA")) {
             cacheAndPublish(jw.channelKey, (String)e.getMessage());
         }else if(jw.messageType.equals("END_DATA")) {
@@ -67,6 +90,7 @@ public class RelayServer extends JSONHandler {
         }else if(jw.messageType.equals("REPLACE")) {
             replaceData(jw.channelKey, jw.replaceKey, (String)e.getMessage());
         }
+        */
     }
     
     protected void replaceData(String key, String replaceKey, String data) {
@@ -102,7 +126,7 @@ public class RelayServer extends JSONHandler {
         }
     }
     
-    protected void addSub(Channel c, String key) {
+    protected void addSubscriber(Channel c, String key) {
         Set<Channel> group = subs.get(key);
         if(group == null) {
             System.out.println("Adding sub group:" + key);
@@ -126,19 +150,19 @@ public class RelayServer extends JSONHandler {
             }
             //System.out.println("Data was null, can't spool");
         }
-        c.write(getEndString(key));
+        c.write(getEndRefreshString(key));
     }
     
-    protected String getEndString(String key) {
-        RelayMessage jw = getEnd(key);
+    protected String getEndRefreshString(String key) {
+        RelayMessage jw = getEndRefreshMessage(key);
         String s = g.toJson(jw);
         return s + "\n";
     }
 
-    protected RelayMessage getEnd(String key) {
+    protected RelayMessage getEndRefreshMessage(String key) {
         RelayMessage jw = new RelayMessage();
         jw.channelKey = key;
-        jw.messageType = "END_REFRESH";
+        jw.messageType = RelayMessageType.END_REFRESH;
         return jw;
     }
     

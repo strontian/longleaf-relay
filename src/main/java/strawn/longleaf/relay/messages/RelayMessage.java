@@ -6,7 +6,7 @@ package strawn.longleaf.relay.messages;
  */
 public class RelayMessage {
     
-    public String messageType;
+    public RelayMessageType messageType;
     public String payload;
     public String channelKey;
     public String replaceKey;
