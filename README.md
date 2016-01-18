@@ -25,7 +25,7 @@ exampleClient.configAndConnect(String host, int port);
 To subscribe to a channel:
 ```java
 exampleClient.subscribeToChannel("exampleChannel"); 
-
+```
 To publish a message to a channel as a String:
 ```java
 exampleClient.publishString(String toPublish, String channelName);
@@ -68,20 +68,20 @@ mvn package
 
 ## Running the server
 
- Once the source is built, to start the server, do:
+Once the source is built, to start the server:
 
 ```console
 java -jar target/longleaf-relay-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
 ## Running the example clients
 
-To run the example receiver, which just prints messages received to the console, do:
+To run the example receiver, which just prints messages received to the console:
 
 ```console
 java -jar target/longleaf-relay-1.0-SNAPSHOT-jar-with-dependencies.jar strawn.longleaf.relay.examples.ExampleReceiver
 ```
 
-To run the example sender, which sends two messages to the server, do:
+To run the example sender, which sends two messages to the server:
 
 ```console
 java -jar target/longleaf-relay-1.0-SNAPSHOT-jar-with-dependencies.jar strawn.longleaf.relay.examples.ExampleSender
