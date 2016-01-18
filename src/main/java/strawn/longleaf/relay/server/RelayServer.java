@@ -1,3 +1,21 @@
+/**
+ * 
+ * Copyright 2016 David Strawn
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
+
 package strawn.longleaf.relay.server;
 
 import java.net.InetSocketAddress;
@@ -24,14 +42,14 @@ public class RelayServer extends RelayMessageHandler {
     
     protected Map<String, Set<Channel>> subs;
     protected Map<String, List<String>> datasets;
-    protected Map<String, Map<String, String>> replaceData;
+    protected Map<String, Map<String, String>> mapData;
     
     protected ServerBootstrap bootstrap;
     
     public RelayServer() {
         subs = new HashMap();
         datasets = new HashMap();
-        replaceData = new HashMap();
+        mapData = new HashMap();
     }
     
     public void connect(int port) {
@@ -69,7 +87,7 @@ public class RelayServer extends RelayMessageHandler {
             case BROADCAST:
                 publishData(jw.channelName, (String)e.getMessage());
                 break;
-            case REPLACE:
+            case MAP_DATA:
                 replaceData(jw.channelName, jw.messageKey, (String)e.getMessage());
                 break;
         }
@@ -77,10 +95,10 @@ public class RelayServer extends RelayMessageHandler {
     }
     
     protected void replaceData(String key, String messageKey, String data) {
-        Map<String, String> channelData = replaceData.get(key);
+        Map<String, String> channelData = mapData.get(key);
         if(channelData == null) {
             channelData = new HashMap();
-            replaceData.put(key, channelData);
+            mapData.put(key, channelData);
         }
         channelData.put(messageKey, data);
         publishData(key, data);
@@ -92,8 +110,8 @@ public class RelayServer extends RelayMessageHandler {
         //what should the behavior be for existing listeners of flushed data?
     }
     
-    protected void publishData(String key, String datum) {
-        Set<Channel> group = subs.get(key);
+    protected void publishData(String channelKey, String datum) {
+        Set<Channel> group = subs.get(channelKey);
         if(group != null) {
             Iterator<Channel> i = group.iterator();
             while(i.hasNext()) {
@@ -124,7 +142,7 @@ public class RelayServer extends RelayMessageHandler {
                 c.write(s + "\n");
             }
         }else {
-            Map<String, String> datum = replaceData.get(key);
+            Map<String, String> datum = mapData.get(key);
             if(datum != null) {
                 for(String s : datum.values()) {
                     c.write(s + "\n");

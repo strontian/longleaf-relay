@@ -1,3 +1,21 @@
+/**
+ * 
+ * Copyright 2016 David Strawn
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
+
 package strawn.longleaf.relay.client;
 
 import strawn.longleaf.relay.netty.RelayMessageHandler;
@@ -119,6 +137,40 @@ public abstract class RelayClient extends RelayMessageHandler implements Connect
     }
     
     /**
+     * Publishes data as an object to a map channel, which will be encoded in a JSON string
+     * 
+     * @param object The object you wish to publish. Stored in the payload field
+     * of RelayMessage
+     * @param channelName the channel to publish to
+     */
+    public void publishJSONMap(Object object, String messageKey, String channelName) {
+        String s = g.toJson(object);
+        RelayMessage jw = new RelayMessage();
+        jw.channelName = channelName;
+        jw.messageType = RelayMessageType.MAP_DATA;
+        jw.payload = s;
+        jw.messageKey = messageKey;
+        String jString = g.toJson(jw);
+        publishChannel.write(jString + "\n");
+    }
+    
+    /**
+     * Publishes data to a map channel as a String
+     * 
+     * @param toPublish the string to be published
+     * @param channelName 
+     */
+    public void publishStringMap(String toPublish, String messageKey, String channelName) {
+        RelayMessage jw = new RelayMessage();
+        jw.channelName = channelName;
+        jw.messageType = RelayMessageType.MAP_DATA;
+        jw.payload = toPublish;
+        jw.messageKey = messageKey;
+        String jString = g.toJson(jw);
+        publishChannel.write(jString + "\n");
+    }
+    
+    /**
      * Publishes data as a String - this data will NOT be cached on the server, and only connected clients
      * will receive it
      * 
@@ -142,6 +194,32 @@ public abstract class RelayClient extends RelayMessageHandler implements Connect
         RelayMessage relayMessage = new RelayMessage();
         relayMessage.channelName = channelName;
         relayMessage.messageType = RelayMessageType.SUBSCRIBE;
+        relayMessage.payload = null;
+        String jString = g.toJson(relayMessage);
+        publishChannel.write(jString + "\n");
+    }
+    
+    /**
+     * Subscribes to a map channel
+     * @param channelName - the name of the map channel to subscribe
+     */
+    public void subscribeToMapChannel(String channelName) {
+        RelayMessage relayMessage = new RelayMessage();
+        relayMessage.channelName = channelName;
+        relayMessage.messageType = RelayMessageType.SUBSCRIBE_MAP;
+        relayMessage.payload = null;
+        String jString = g.toJson(relayMessage);
+        publishChannel.write(jString + "\n");
+    }
+    
+    /**
+     * Subscribes to a channel
+     * @param channelName - the name of the channel to subscribe
+     */
+    public void subscribeToChannelMap(String channelName) {
+        RelayMessage relayMessage = new RelayMessage();
+        relayMessage.channelName = channelName;
+        relayMessage.messageType = RelayMessageType.SUBSCRIBE_MAP;
         relayMessage.payload = null;
         String jString = g.toJson(relayMessage);
         publishChannel.write(jString + "\n");
