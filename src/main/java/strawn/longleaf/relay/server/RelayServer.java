@@ -40,16 +40,18 @@ import strawn.longleaf.relay.netty.JSONPipelineFactory;
  */
 public class RelayServer extends RelayMessageHandler {
     
-    protected Map<String, Set<Channel>> subs;
-    protected Map<String, List<String>> datasets;
-    protected Map<String, Map<String, String>> mapData;
+    protected Map<String, Set<Channel>> subscribers;
+    protected Map<String, Set<Channel>> mapSubscribers;
+    protected Map<String, List<String>> allChannelData;
+    protected Map<String, Map<String, String>> allMapChannelData;
     
     protected ServerBootstrap bootstrap;
     
     public RelayServer() {
-        subs = new HashMap();
-        datasets = new HashMap();
-        mapData = new HashMap();
+        subscribers = new HashMap();
+        mapSubscribers = new HashMap();
+        allChannelData = new HashMap();
+        allMapChannelData = new HashMap();
     }
     
     public void connect(int port) {
@@ -64,92 +66,160 @@ public class RelayServer extends RelayMessageHandler {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
         String tos = e.getCause().toString();
-        String res = e.getCause().getMessage();
-        String loc = e.getCause().getLocalizedMessage();
-        System.out.println("got exception:" + tos);
-        System.out.println("got exception:" + res);
-        System.out.println("got exception:" + loc);
+        System.out.println("Got Netty exception:" + tos);
+        //String res = e.getCause().getMessage();
+        //String loc = e.getCause().getLocalizedMessage();
+        //System.out.println("got exception:" + res);
+        //System.out.println("got exception:" + loc);
     }
     
     @Override
-    public void handleMessage(RelayMessage jw, MessageEvent e) {
+    public void handleMessage(RelayMessage relayMessage, MessageEvent e) {
         System.out.println("Server Got Message:" + (String)e.getMessage());
-        switch (jw.messageType) {
+        switch (relayMessage.messageType) {
             case SUBSCRIBE:
-                addSubscriber(e.getChannel(), jw.channelName);
+                addSubscriber(e.getChannel(), relayMessage.channelName);
+                break;
+            case SUBSCRIBE_MAP:
+                addMapSubscriber(e.getChannel(), relayMessage.channelName);
                 break;
             case DATA:
-                cacheAndPublish(jw.channelName, (String)e.getMessage());
+                cacheAndPublish(relayMessage.channelName, (String)e.getMessage());
                 break;
             case FLUSH:
-                flushStream(jw.channelName);
+                flushChannel(relayMessage.channelName, (String)e.getMessage());
+                break;
+            case FLUSH_MAP:
+                flushMap(relayMessage.channelName, (String)e.getMessage());
                 break;
             case BROADCAST:
-                publishData(jw.channelName, (String)e.getMessage());
+                publishData(relayMessage.channelName, (String)e.getMessage());
                 break;
-            case MAP_DATA:
-                replaceData(jw.channelName, jw.messageKey, (String)e.getMessage());
+            case DATA_MAP:
+                replaceData(relayMessage.channelName, relayMessage.messageKey, (String)e.getMessage());
+                break;
+            case UNSUBSCRIBE:
+                removeSubscriber(e.getChannel(), relayMessage.channelName);
+                break;
+            case UNSUBSCRIBE_MAP:
+                removeMapSubscriber(e.getChannel(), relayMessage.channelName);
                 break;
         }
-        
     }
     
     protected void replaceData(String key, String messageKey, String data) {
-        Map<String, String> channelData = mapData.get(key);
-        if(channelData == null) {
-            channelData = new HashMap();
-            mapData.put(key, channelData);
+        Map<String, String> mapChannelData = allMapChannelData.get(key);
+        if(mapChannelData == null) {
+            mapChannelData = new HashMap();
+            allMapChannelData.put(key, mapChannelData);
         }
-        channelData.put(messageKey, data);
+        mapChannelData.put(messageKey, data);
         publishData(key, data);
     }
     
-    protected void flushStream(String key) {
-        subs.remove(key);
-        datasets.remove(key);
-        //what should the behavior be for existing listeners of flushed data?
+    protected void flushChannel(String channelKey, String flushMessage) {
+        Set<Channel> channelGroup = subscribers.get(channelKey);
+        for (Channel c : channelGroup) {
+            c.write(flushMessage + "\n");
+        }
+        //subscribers.remove(key);
+        allChannelData.remove(channelKey);
+    }
+    
+    protected void flushMap(String channelKey, String flushMessage) {
+        Set<Channel> channelGroup = mapSubscribers.get(channelKey);
+        for(Channel c : channelGroup) {
+            c.write(flushMessage + "\n");
+        }
+        //mapSubscribers.remove(key);
+        allMapChannelData.remove(channelKey);
     }
     
     protected void publishData(String channelKey, String datum) {
-        Set<Channel> group = subs.get(channelKey);
+        Set<Channel> group = subscribers.get(channelKey);
         if(group != null) {
             Iterator<Channel> i = group.iterator();
             while(i.hasNext()) {
                 Channel c = i.next();
                 if(c.isConnected()) {
-                    System.out.println("Found connected Channel, routing data:" + datum);
+                    //the channel is connected, write the message
+                    //System.out.println("Found connected Channel, routing data:" + datum);
                     c.write(datum + "\n");
                 }else {
+                    //if the channel is disconnected, remove it from the subscriber group
+                    //System.out.println("Can't route data, channel null - removing channel from subscriber set.");
                     i.remove();
-                    System.out.println("Can't route data, channel null - removing channel from subscriber set.");
                 }
             }
         }
     }
     
-    protected void addSubscriber(Channel c, String key) {
-        Set<Channel> group = subs.get(key);
-        if(group == null) {
-            //System.out.println("Adding sub group:" + key);
-            group = new HashSet();
-            subs.put(key, group);
-        }
-        group.add(c);
-        List<String> data = datasets.get(key);
-        if(data != null) {
-            for(String s : data) {
-                //System.out.println("Found data, spooling:" + s);
-                c.write(s + "\n");
-            }
-        }else {
-            Map<String, String> datum = mapData.get(key);
-            if(datum != null) {
-                for(String s : datum.values()) {
-                    c.write(s + "\n");
+    protected void removeSubscriber(Channel toRemove, String channelKey) {
+        Set<Channel> group = subscribers.get(channelKey);
+        if(group != null) {
+            Iterator<Channel> i = group.iterator();
+            while(i.hasNext()) {
+                Channel channel = i.next();
+                if(channel.equals(toRemove)) {
+                    i.remove();
                 }
             }
-            //System.out.println("Data was null, can't spool");
         }
+    }
+    
+    protected void removeMapSubscriber(Channel toRemove, String channelKey) {
+        Set<Channel> group = mapSubscribers.get(channelKey);
+        if(group != null) {
+            Iterator<Channel> i = group.iterator();
+            while(i.hasNext()) {
+                Channel channel = i.next();
+                if(channel.equals(toRemove)) {
+                    i.remove();
+                }
+            }
+        }
+    }
+    
+    protected void addSubscriber(Channel c, String channelKey) {
+        
+        //add channel to the subscriber group
+        Set<Channel> group = subscribers.get(channelKey);
+        if(group == null) {
+            group = new HashSet();
+            subscribers.put(channelKey, group);
+        }
+        group.add(c);
+        
+        //forward all cached messages to new subscriber
+        List<String> data = allChannelData.get(channelKey);
+        if(data != null) {
+            for(String s : data) {
+                c.write(s + "\n");
+            }
+        }
+        //write END_REFRESH message to new subscriber once all data is sent
+        c.write(getEndRefreshString(channelKey));
+    }
+    
+    protected void addMapSubscriber(Channel c, String key) {
+        
+        //add channel to the subscriber group
+        Set<Channel> group = mapSubscribers.get(key);
+        if(group == null) {
+            //create subscriber group
+            group = new HashSet();
+            mapSubscribers.put(key, group);
+        }
+        group.add(c);
+        
+        //forward all cached messages to new subscriber
+        Map<String, String> dataMap = allMapChannelData.get(key);
+        if(dataMap != null) {
+            for(String s : dataMap.values()) {
+                c.write(s + "\n");
+            }
+        }
+        //write END_REFRESH message to new subscriber once all data is sent
         c.write(getEndRefreshString(key));
     }
     
@@ -159,7 +229,7 @@ public class RelayServer extends RelayMessageHandler {
         return s + "\n";
     }
 
-    protected RelayMessage getEndRefreshMessage(String key) {
+    protected static RelayMessage getEndRefreshMessage(String key) {
         RelayMessage jw = new RelayMessage();
         jw.channelName = key;
         jw.messageType = RelayMessageType.END_REFRESH;
@@ -168,10 +238,10 @@ public class RelayServer extends RelayMessageHandler {
     
     protected void cacheAndPublish(String key, String datum) {
         publishData(key, datum);
-        List<String> data = datasets.get(key);
+        List<String> data = allChannelData.get(key);
         if(data == null) {
             data = new ArrayList();
-            datasets.put(key, data);
+            allChannelData.put(key, data);
         }
         data.add(datum);
     }

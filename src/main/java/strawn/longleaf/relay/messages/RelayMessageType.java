@@ -28,6 +28,9 @@ public enum RelayMessageType {
     DATA,
     FLUSH,
     BROADCAST,
-    MAP_DATA,
-    END_REFRESH
+    DATA_MAP,
+    END_REFRESH,
+    FLUSH_MAP,
+    UNSUBSCRIBE,
+    UNSUBSCRIBE_MAP
 }
