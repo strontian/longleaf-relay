@@ -78,7 +78,7 @@ mvn package
 
 ## Running the server
 
-Once the source is built, to start the server:
+Once the source is built, to start the server(this must be run from the project directory, see configuration below):
 
 ```console
 java -jar target/longleaf-relay-1.0-SNAPSHOT-jar-with-dependencies.jar
@@ -96,6 +96,11 @@ To run the example sender, which sends two messages to the server:
 ```console
 java -jar target/longleaf-relay-1.0-SNAPSHOT-jar-with-dependencies.jar strawn.longleaf.relay.examples.ExampleSender
 ```
+
+## Configuration
+
+Client and server configuration are located in resources/clientconfig.properties and resources/serverconfig.properties, respectively. Since they are loaded using a relative path(see strawn.longleaf.relay.util.RelayConfigLoader), the easiest way to load the configuration is to include the resources folder in the directory where the program is run.
+
 
 ## Motivation
 
