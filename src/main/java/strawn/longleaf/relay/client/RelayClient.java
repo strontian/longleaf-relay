@@ -9,6 +9,8 @@ import java.util.concurrent.Executors;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import strawn.longleaf.relay.messages.RelayMessageType;
 
@@ -168,6 +170,16 @@ public abstract class RelayClient extends RelayMessageHandler implements Connect
     
     public boolean canPublish() {
         return isConnected();
+    }
+    
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
+        String tos = e.getCause().toString();
+        String res = e.getCause().getMessage();
+        String loc = e.getCause().getLocalizedMessage();
+        System.out.println("got exception:" + tos);
+        System.out.println("got exception:" + res);
+        System.out.println("got exception:" + loc);
     }
     
 }

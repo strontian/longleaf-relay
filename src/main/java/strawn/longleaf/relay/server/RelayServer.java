@@ -70,19 +70,19 @@ public class RelayServer extends RelayMessageHandler {
                 publishData(jw.channelName, (String)e.getMessage());
                 break;
             case REPLACE:
-                replaceData(jw.channelName, jw.replaceKey, (String)e.getMessage());
+                replaceData(jw.channelName, jw.messageKey, (String)e.getMessage());
                 break;
         }
         
     }
     
-    protected void replaceData(String key, String replaceKey, String data) {
+    protected void replaceData(String key, String messageKey, String data) {
         Map<String, String> channelData = replaceData.get(key);
         if(channelData == null) {
             channelData = new HashMap();
             replaceData.put(key, channelData);
         }
-        channelData.put(replaceKey, data);
+        channelData.put(messageKey, data);
         publishData(key, data);
     }
     

@@ -11,13 +11,13 @@ public class RelayMessage {
     public RelayMessageType messageType;
     public String payload;
     public String channelName;
-    public String replaceKey;
+    public String messageKey;
     
-    public RelayMessage(RelayMessageType messageType, String payload, String channelName, String replaceKey) {
+    public RelayMessage(RelayMessageType messageType, String payload, String channelName, String messageKey) {
         this.messageType = messageType;
         this.payload = payload;
         this.channelName = channelName;
-        this.replaceKey = replaceKey;
+        this.messageKey = messageKey;
     }
 
     public RelayMessage() {
