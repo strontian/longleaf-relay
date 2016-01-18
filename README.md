@@ -89,16 +89,19 @@ java -jar target/longleaf-relay-1.0-SNAPSHOT-jar-with-dependencies.jar strawn.lo
 
 ## Motivation
 
-  The main advantage of longleaf-relay is that is provides a lot of flexibility to the clients. Messages from many publishers are can be aggregated on the server, so a single listening client can get messages from many different places. Receivers don't have to be connected at the time a message is sent to receive it. Also publishers and receivers do not have to maintain a connection to one another. They can connect and disconnect from the server at will. 
+  The main advantage of longleaf-relay is the is the flexibility if provides to the clients. Messages from many publishers are aggregated on the server, so a single receiving client can get messages from many different places. 
+  
+  Receivers don't have to be connected at the time a message is sent to receive it. 
 
- Another use case is that if two clients are both behind networks that make it difficult for them to connect to each other, or if they do not know of each others location, they can use a centrally located server to talk to one another.
+  Publishers and receivers also do not have to maintain a connection to one another. They can connect and disconnect from the server at will. 
+
+ Another advantage is that when two clients are both behind network configuration that make it difficult for them to connect to each other, or if they do not have fixed IP addresses, they can use a centrally located server to communicate.
 
 
 
 ## License
 
 MIT
-
-
+Gson and Netty are licensed by Apache License, v2.0
 
 
