@@ -39,7 +39,7 @@ public class ChannelDataCollectorClient extends RelayJSONClient {
     
     @Override
     public void handleJSON(RelayMessage jw, MessageEvent e) {
-        ChannelDataCollection hc = data.get(jw.channelKey);
+        ChannelDataCollection hc = data.get(jw.channelName);
         if(jw.messageType.equals("END_REFRESH")) {
             hc.completed = true;
         }else {
@@ -62,7 +62,7 @@ public class ChannelDataCollectorClient extends RelayJSONClient {
         }
         hc = new ChannelDataCollection(channelName);
         data.put(channelName, hc);
-        subData(channelName);
+        subscribeToChannel(channelName);
     }
     
     public boolean collectionComplete() {

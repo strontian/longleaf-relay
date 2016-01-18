@@ -7,9 +7,8 @@ package strawn.longleaf.relay.messages;
 public enum RelayMessageType {
     SUBSCRIBE,
     DATA,
-    END_DATA,
     FLUSH,
-    PUBLISH,
+    BROADCAST,
     REPLACE,
     END_REFRESH
 }

@@ -3,6 +3,7 @@ package strawn.longleaf.relay.exceptions;
 /**
  *
  * @author David Strawn
+ * 
  */
 public class AlreadySubscribedException extends Exception {
     private final String channel;

@@ -11,6 +11,12 @@ import org.jboss.netty.handler.codec.string.StringEncoder;
 /**
  *
  * @author David Strawn
+ * 
+ * This is a class required by Netty, it puts a JSON Handler in Netty's pipeline, 
+ * along with string encoder/decoders. When a message comes off the network, this tells
+ * the pipeline to interpret the data as a string, and then to interpret the string as
+ * a JSON object.
+ * 
  */
 public class JSONPipelineFactory implements ChannelPipelineFactory {
 

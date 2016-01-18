@@ -14,8 +14,11 @@ import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import strawn.longleaf.relay.messages.RelayMessageType;
 
 /**
- *
+ * 
  * @author David Strawn
+ * 
+ * Clients that want to send data to or receive data from the server should extend this class.
+ * 
  */
 public abstract class RelayJSONClient extends JSONHandler implements JSONPublisher, Connector {
     
@@ -24,6 +27,11 @@ public abstract class RelayJSONClient extends JSONHandler implements JSONPublish
     protected String host;
     protected int port;
     
+    /**
+     * Use this constructor if you would like to provide the threads that the client uses
+     * @param boss
+     * @param work 
+     */
     public RelayJSONClient(Executor boss, Executor work) {
         bootstrap = new ClientBootstrap(new NioClientSocketChannelFactory(boss, work, 1));
         bootstrap.setPipelineFactory(new JSONPipelineFactory(this));
@@ -39,62 +47,118 @@ public abstract class RelayJSONClient extends JSONHandler implements JSONPublish
         bootstrap.setOption("receiveBufferSize", 1048576);
         bootstrap.setOption("keepAlive", true);
     }
-    
+    /**
+     * Attempts to reconnect to the server
+     * 
+     * @return true if the client was able to reconnect, and false otherwise
+     */
     public boolean reconnect() {
         ChannelFuture future = bootstrap.connect(new InetSocketAddress(host, port));
         publishChannel = future.awaitUninterruptibly().getChannel(); 
-        boolean ret = future.isSuccess();
-        if(ret) {
+        boolean success = future.isSuccess();
+        if(success) {
             onConnection();
         }else {
             onFailedConnection();
         }
-        return ret;
+        return success;
     }
-    
-    public void close() {
+    /**
+     * Disconnects from the server
+     */
+    public void disconnect() {
         publishChannel.close();
         bootstrap.releaseExternalResources();
     }
-    
+    /**
+     * Connects to the server
+     * 
+     * @param host Hostname of the server
+     * @param port Port on which the server is running
+     */
     public void configAndConnect(String host, int port) {
         this.host = host;
         this.port = port;
         reconnect();
     }
     
-    public void writeJSON(String jString) {
-        publishChannel.write(jString + "\n");
-    }
-    
     /**
-     * publishes data to the server
-     * @param o
-     * @param key
+     * Publishes data as an object, which will be encoded in a JSON string
+     * 
+     * @param object The object you wish to publish. Stored in the payload field
+     * of RelayMessage
+     * @param channelName the channel to publish to
      */
-    public void publishJSON(Object o, String key) {
-        String s = g.toJson(o);
+    public void publishJSON(Object object, String channelName) {
+        String s = g.toJson(object);
         RelayMessage jw = new RelayMessage();
-        jw.channelKey = key;
+        jw.channelName = channelName;
         jw.messageType = RelayMessageType.DATA;
         jw.payload = s;
         String jString = g.toJson(jw);
         publishChannel.write(jString + "\n");
     }
-    
     /**
-     * Subscribes to data
-     * @param key - the name of the stream to subscribe
+     * Publishes data as a String
+     * 
+     * @param toPublish the string to be published
+     * @param channelName 
      */
-    public void subData(String key) {
+    public void publishString(String toPublish, String channelName) {
         RelayMessage jw = new RelayMessage();
-        jw.channelKey = key;
-        jw.messageType = RelayMessageType.SUBSCRIBE;
-        jw.payload = "";
+        jw.channelName = channelName;
+        jw.messageType = RelayMessageType.DATA;
+        jw.payload = toPublish;
         String jString = g.toJson(jw);
         publishChannel.write(jString + "\n");
     }
     
+    /**
+     * Publishes data as a String - this data will NOT be cached on the server, and only connected clients
+     * will receive it
+     * 
+     * @param toBroadcast the string to be published
+     * @param channelName 
+     */
+    public void broadcastString(String toBroadcast, String channelName) {
+        RelayMessage jw = new RelayMessage();
+        jw.channelName = channelName;
+        jw.messageType = RelayMessageType.BROADCAST;
+        jw.payload = toBroadcast;
+        String jString = g.toJson(jw);
+        publishChannel.write(jString + "\n");
+    }
+    
+    /**
+     * Subscribes to a channel
+     * @param channelName - the name of the channel to subscribe
+     */
+    public void subscribeToChannel(String channelName) {
+        RelayMessage relayMessage = new RelayMessage();
+        relayMessage.channelName = channelName;
+        relayMessage.messageType = RelayMessageType.SUBSCRIBE;
+        relayMessage.payload = null;
+        String jString = g.toJson(relayMessage);
+        publishChannel.write(jString + "\n");
+    }
+    
+    /**
+     * Deletes all data in a channel
+     * @param channelName 
+     */
+    public void flushChannel(String channelName) {
+        RelayMessage relayMessage = new RelayMessage();
+        relayMessage.channelName = channelName;
+        relayMessage.messageType = RelayMessageType.FLUSH;
+        relayMessage.payload = null;
+        String asJSON = g.toJson(relayMessage);
+        publishChannel.write(asJSON + "\n");
+    }
+    
+    /**
+     * Returns true if the client is currently connected to the server
+     * @return 
+     */
     public boolean isConnected() {
         return publishChannel != null && publishChannel.isOpen() && publishChannel.isConnected();
     }

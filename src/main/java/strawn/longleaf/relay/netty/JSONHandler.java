@@ -9,12 +9,23 @@ import strawn.longleaf.relay.messages.RelayMessage;
 /**
  *
  * @author David Strawn
+ * 
+ * This is a decoder to be used in the Netty pipeline. When a message is received from the network,
+ * a handler that is previous to this one interprets it as a String, and this handler converts
+ * that String into a RelayMessage object that the clients and server understand.
  */
 public abstract class JSONHandler extends SimpleChannelUpstreamHandler {
     
-    public abstract void handleJSON(RelayMessage jw, MessageEvent e);
-    
     protected Gson g;
+    
+    /**
+     * 
+     * This method should be overridden on the client to describe how it should handle received messages
+     * 
+     * @param relayMessage The message received by the client
+     * @param e The MessageEvent from Netty
+     */
+    public abstract void handleJSON(RelayMessage relayMessage, MessageEvent e);
     
     public JSONHandler() {
         g = new Gson();

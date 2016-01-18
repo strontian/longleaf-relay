@@ -1,4 +1,4 @@
-package strawn.longleaf.relay.tasks;
+package strawn.longleaf.relay.examples.tasks;
 
 import strawn.longleaf.relay.client.Connector;
 import java.util.TimerTask;
@@ -6,6 +6,7 @@ import java.util.TimerTask;
 /**
  *
  * @author David Strawn
+ * 
  */
 public class CloseTask extends TimerTask {
 
@@ -17,7 +18,7 @@ public class CloseTask extends TimerTask {
     
     @Override
     public void run() {
-        c.close();
+        c.disconnect();
     }
     
 }

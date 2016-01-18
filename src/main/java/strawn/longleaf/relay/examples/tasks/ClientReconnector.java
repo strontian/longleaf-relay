@@ -1,4 +1,4 @@
-package strawn.longleaf.relay.tasks;
+package strawn.longleaf.relay.examples.tasks;
 
 import strawn.longleaf.relay.client.Connector;
 import java.util.TimerTask;
@@ -6,6 +6,7 @@ import java.util.TimerTask;
 /**
  *
  * @author David Strawn
+ * 
  */
 public class ClientReconnector extends TimerTask {
 
@@ -26,8 +27,6 @@ public class ClientReconnector extends TimerTask {
             }else {
                 c.onFailedConnection();
             }
-        }else {
-            //System.out.println("Client connected, no r/c");
         }
     }
     

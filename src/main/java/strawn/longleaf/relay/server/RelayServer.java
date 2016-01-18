@@ -16,7 +16,7 @@ import strawn.longleaf.relay.netty.JSONPipelineFactory;
 
 /**
  *
- * RelayServer is a simple JSON storage and reflection server
+ * RelayServer is a simple JSON storage and reflection server.
  * 
  * @author David Strawn
  */
@@ -55,42 +55,25 @@ public class RelayServer extends JSONHandler {
     
     @Override
     public void handleJSON(RelayMessage jw, MessageEvent e) {
+        System.out.println("Server Got Message:" + (String)e.getMessage());
         switch (jw.messageType) {
             case SUBSCRIBE:
-                addSubscriber(e.getChannel(), jw.channelKey);
+                addSubscriber(e.getChannel(), jw.channelName);
                 break;
             case DATA:
-                cacheAndPublish(jw.channelKey, (String)e.getMessage());
-                break;
-            case END_DATA:
-                cacheAndPublish(jw.channelKey, (String)e.getMessage());
+                cacheAndPublish(jw.channelName, (String)e.getMessage());
                 break;
             case FLUSH:
-                flushStream(jw.channelKey);
+                flushStream(jw.channelName);
                 break;
-            case PUBLISH:
-                publishData(jw.channelKey, (String)e.getMessage());
+            case BROADCAST:
+                publishData(jw.channelName, (String)e.getMessage());
                 break;
             case REPLACE:
-                replaceData(jw.channelKey, jw.replaceKey, (String)e.getMessage());
+                replaceData(jw.channelName, jw.replaceKey, (String)e.getMessage());
                 break;
         }
         
-        /*
-        if(jw.messageType.equals("SUBSCRIBE")) {
-            addSubscriber(e.getChannel(), jw.channelKey);
-        }else if(jw.messageType.equals("DATA")) {
-            cacheAndPublish(jw.channelKey, (String)e.getMessage());
-        }else if(jw.messageType.equals("END_DATA")) {
-            cacheAndPublish(jw.channelKey, (String)e.getMessage());
-        }else if(jw.messageType.equals("FLUSH")) {
-            flushStream(jw.channelKey);
-        }else if(jw.messageType.equals("PUBLISH")) {
-            publishData(jw.channelKey, (String)e.getMessage());
-        }else if(jw.messageType.equals("REPLACE")) {
-            replaceData(jw.channelKey, jw.replaceKey, (String)e.getMessage());
-        }
-        */
     }
     
     protected void replaceData(String key, String replaceKey, String data) {
@@ -129,7 +112,7 @@ public class RelayServer extends JSONHandler {
     protected void addSubscriber(Channel c, String key) {
         Set<Channel> group = subs.get(key);
         if(group == null) {
-            System.out.println("Adding sub group:" + key);
+            //System.out.println("Adding sub group:" + key);
             group = new HashSet();
             subs.put(key, group);
         }
@@ -137,10 +120,9 @@ public class RelayServer extends JSONHandler {
         List<String> data = datasets.get(key);
         if(data != null) {
             for(String s : data) {
-                System.out.println("Found data, spooling:" + s);
+                //System.out.println("Found data, spooling:" + s);
                 c.write(s + "\n");
             }
-            
         }else {
             Map<String, String> datum = replaceData.get(key);
             if(datum != null) {
@@ -161,7 +143,7 @@ public class RelayServer extends JSONHandler {
 
     protected RelayMessage getEndRefreshMessage(String key) {
         RelayMessage jw = new RelayMessage();
-        jw.channelKey = key;
+        jw.channelName = key;
         jw.messageType = RelayMessageType.END_REFRESH;
         return jw;
     }

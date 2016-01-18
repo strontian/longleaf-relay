@@ -1,8 +1,9 @@
 package strawn.longleaf.relay.examples;
 
 /**
- *
- * @author davidstrawn
+ * This is a POJO, used to demonstrate sending an object as JSON in the examples
+ * 
+ * @author David Strawn
  */
 public class ExampleMessage {
     

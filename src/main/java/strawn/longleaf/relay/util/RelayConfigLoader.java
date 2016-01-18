@@ -1,18 +1,20 @@
 package strawn.longleaf.relay.util;
 
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 /**
  *
  * @author David Strawn
+ * 
+ * This class loads configuration from the file system.
+ * 
  */
 public class RelayConfigLoader {
     
-    private static final String serverConfigLocation = "serverconfig.properties";
-    private static final String clientConfigLocation = "clientconfig.properties";
+    private static final String serverConfigLocation = "./resources/serverconfig.properties";
+    private static final String clientConfigLocation = "./resources/clientconfig.properties";
     
     private final Properties properties;
     
@@ -28,14 +30,15 @@ public class RelayConfigLoader {
         loadConfigFromPath(clientConfigLocation);
     }
     
+    /**
+     * Use this method if you want to use a different location for the configuration.
+     * @param configFileLocation - location of the configuration file
+     * @throws IOException 
+     */
     public void loadConfigFromPath(String configFileLocation) throws IOException {
-        InputStream inputStream = getClass().getResourceAsStream(configFileLocation);
-        if (inputStream != null) {
-            properties.load(inputStream);
-        } else {
-            throw new FileNotFoundException("server config file:'" + configFileLocation + "' not found.");
-        }
-        inputStream.close();
+        FileInputStream fileInputStream = new FileInputStream(configFileLocation);
+        properties.load(fileInputStream);
+        fileInputStream.close();
     }
     
     public int getPort() {
