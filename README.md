@@ -28,12 +28,14 @@ exampleClient.subscribeToChannel("exampleChannel");
 ```
 To publish a message to a channel as a String:
 ```java
-exampleClient.publishString(String toPublish, String channelName);
+String toPublish = "example";
+exampleClient.publishString(toPublish, channelName);
 ```
 
 Java objects can be encoded as JSON and sent as messages, a power way to build sophisticated client behavior:
 ```java
-exampleClient.publishObject(Object toPublish, String channelName);
+ExampleMessage toPublish = new ExampleMessage("exampleString1", "exampleString2");
+exampleClient.publishObject(toPublish, channelName);
 ```
 
 To delete all messages in a channel:
@@ -45,6 +47,11 @@ To send a message that will not be cached, and will only be received by currentl
 exampleClient.broadcastString(String toBroadcast, String channelName)
 ```
 
+To unsubscribe from a channel:
+```java
+exampleClient.unsubscribeChannel(channelName);
+```
+
 Clients that wish to subscribe to messages should override the method handleJSON:
 
 ```java
@@ -53,6 +60,9 @@ public class ExampleClient extends RelayClient {
   @Override
   handleMessage(RelayMessage relayMessage, MessageEvent e) {
     System.out.println(relayMessage.payload);
+    //if the publishObject method was used, the object can be decoded like this:
+    ExampleMessage example = gson.fromJson(relayMessage.payload, ExampleMessage.class);
+    //gson instance is provided by the class RelayMessageHandler, which RelayClient Extends
   }
 
 }
@@ -97,11 +107,32 @@ java -jar target/longleaf-relay-1.0-SNAPSHOT-jar-with-dependencies.jar strawn.lo
 
  Another advantage is that when two clients are both behind network configuration that make it difficult for them to connect to each other, or if they do not have fixed IP addresses, they can use a centrally located server to communicate.
 
+## Map Channels
 
+A second paradigm for representing channel data is available through map channels. Messages in a map channel are represented by a map. In addition to providing a channel name when publishing data, you must also provide a message key. Any data subsequently published in the same channel and same key will replace previous data sent. 
 
+There are analogous functions to most of the functions for working with regular channels:
+
+```java
+//publish an object as JSON to a map channel
+exampleClient.publishJSONMap(exampleObject, exampleChannelName, exampleMessageKey);
+
+//publish a String to a map channel
+exampleClient.publishStringMap(exampleString, exampleChannelName, exampleMessageKey);
+
+//subscribe to a map channel
+exampleClient.subscribeMapChannel(exampleChannelName);
+
+//unsubscribe to a map channel
+exampleClient.unsubscribeMapChannel(exampleChannelName);
+
+//delete all data in a map channel
+exampleClient.flushMapChannel(exampleChannelName);
+
+```
 ## License
 
-MIT
-Gson and Netty are licensed by Apache License, v2.0
+longleaf-relay is provided under the Apache License v2.0. Please see LICENSE and NOTICE 
+Dependencies Gson and Netty are licensed by Apache License v2.0. Please see NOTICE
 
 
