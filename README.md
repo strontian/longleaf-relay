@@ -99,7 +99,9 @@ java -jar target/longleaf-relay-1.0-SNAPSHOT-jar-with-dependencies.jar strawn.lo
 
 ## Motivation
 
-  The main advantage of longleaf-relay is the is the flexibility if provides to the clients. Messages from many publishers are aggregated on the server, so a single receiving client can get messages from many different places. 
+  The main advantage of longleaf-relay is the is the flexibility if provides to the clients. 
+
+  Messages from many publishers are aggregated on the server, so a single receiving client can get messages from many different places. 
   
   Receivers don't have to be connected at the time a message is sent to receive it. 
 
