@@ -133,6 +133,7 @@ exampleClient.flushMapChannel(exampleChannelName);
 ## License
 
 longleaf-relay is provided under the Apache License v2.0. Please see LICENSE and NOTICE 
+
 Dependencies Gson and Netty are licensed by Apache License v2.0. Please see NOTICE
 
 
