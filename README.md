@@ -2,7 +2,7 @@
 
 ##Synopsis 
 
-longleaf-relay is a message relay system written in Java. The system consists of a single server, and multiple clients who can subscribe to and/or publish data.
+longleaf-relay is a message relay system written in Java. The system consists of a central server, to which multiple clients can connect to publish and receive data.
 
 Messages are stored on the server in channels. After subscribing to a channel, a client will receive all messages previously sent to the channel in order. It will then receive a message of type END_REFRESH. While connected, the client will receive any further messages sent to the channel. Multiple clients can subscribe to the same channel, and will all receive the same messages.
 
@@ -14,7 +14,7 @@ public class ExampleClient extends RelayClient() {
 
 }
 
-exampleClient exampleClient = new exampleClient();
+ExampleClient exampleClient = new ExampleClient();
 
 ```
 To connect to the server: 
@@ -31,7 +31,7 @@ To publish a message to a channel as a String:
 exampleClient.publishString(String toPublish, String channelName);
 ```
 
-Java objects can be encoded as JSON, and used to communicate; very powerful for building more sophisticated client behavior:
+Java objects can be encoded as JSON and sent as messages, a power way to build sophisticated client behavior:
 ```java
 exampleClient.publishObject(Object toPublish, String channelName);
 ```
