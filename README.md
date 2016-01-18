@@ -19,7 +19,7 @@ ExampleClient exampleClient = new ExampleClient();
 ```
 To connect to the server: 
 ```java
-exampleClient.configAndConnect(String host, int port);
+exampleClient.configAndConnect("localhost", 40001);
 ```
 
 To subscribe to a channel:
@@ -32,7 +32,7 @@ String toPublish = "example";
 exampleClient.publishString(toPublish, channelName);
 ```
 
-Java objects can be encoded as JSON and sent as messages, a power way to build sophisticated client behavior:
+Java objects can be encoded as JSON and sent as messages, a powerful way to build sophisticated client behavior:
 ```java
 ExampleMessage toPublish = new ExampleMessage("exampleString1", "exampleString2");
 exampleClient.publishObject(toPublish, channelName);
@@ -40,16 +40,16 @@ exampleClient.publishObject(toPublish, channelName);
 
 To delete all messages in a channel:
 ```java 
-exampleClient.flushChannel(String channelName)
+exampleClient.flushChannel("exampleChannelName")
 ```
 To send a message that will not be cached, and will only be received by currently connected clients: 
 ```java
-exampleClient.broadcastString(String toBroadcast, String channelName)
+exampleClient.broadcastString("stringToBroadcast", "exampleChannelName")
 ```
 
 To unsubscribe from a channel:
 ```java
-exampleClient.unsubscribeChannel(channelName);
+exampleClient.unsubscribeChannel("exampleChannelName");
 ```
 
 Clients that wish to subscribe to messages should override the method handleJSON:
@@ -128,6 +128,8 @@ exampleClient.unsubscribeMapChannel(exampleChannelName);
 
 //delete all data in a map channel
 exampleClient.flushMapChannel(exampleChannelName);
+
+Data from a map channel will not necessarily arrive in the order received upon subscription
 
 ```
 ## License
