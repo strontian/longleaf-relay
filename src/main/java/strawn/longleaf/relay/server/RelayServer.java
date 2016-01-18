@@ -11,7 +11,7 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import strawn.longleaf.relay.messages.RelayMessage;
 import strawn.longleaf.relay.messages.RelayMessageType;
-import strawn.longleaf.relay.netty.JSONHandler;
+import strawn.longleaf.relay.netty.RelayMessageHandler;
 import strawn.longleaf.relay.netty.JSONPipelineFactory;
 
 /**
@@ -20,7 +20,7 @@ import strawn.longleaf.relay.netty.JSONPipelineFactory;
  * 
  * @author David Strawn
  */
-public class RelayServer extends JSONHandler {
+public class RelayServer extends RelayMessageHandler {
     
     protected Map<String, Set<Channel>> subs;
     protected Map<String, List<String>> datasets;
@@ -54,7 +54,7 @@ public class RelayServer extends JSONHandler {
     }
     
     @Override
-    public void handleJSON(RelayMessage jw, MessageEvent e) {
+    public void handleMessage(RelayMessage jw, MessageEvent e) {
         System.out.println("Server Got Message:" + (String)e.getMessage());
         switch (jw.messageType) {
             case SUBSCRIBE:

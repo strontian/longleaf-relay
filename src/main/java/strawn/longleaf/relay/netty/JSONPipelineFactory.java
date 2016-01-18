@@ -20,9 +20,9 @@ import org.jboss.netty.handler.codec.string.StringEncoder;
  */
 public class JSONPipelineFactory implements ChannelPipelineFactory {
 
-    protected JSONHandler jh;
+    protected RelayMessageHandler jh;
     
-    public JSONPipelineFactory(JSONHandler jh) {
+    public JSONPipelineFactory(RelayMessageHandler jh) {
         this.jh = jh;
     }
     

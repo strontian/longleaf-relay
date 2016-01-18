@@ -1,8 +1,10 @@
 package strawn.longleaf.relay.examples;
 
 import java.io.IOException;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
-import strawn.longleaf.relay.client.RelayJSONClient;
+import strawn.longleaf.relay.client.RelayClient;
 import strawn.longleaf.relay.messages.RelayMessage;
 import strawn.longleaf.relay.util.RelayConfigLoader;
 
@@ -13,7 +15,18 @@ import strawn.longleaf.relay.util.RelayConfigLoader;
  * This example client connects to the server, and immediately writes two messages to channel 'example'
  * 
  */
-public class ExampleSender extends RelayJSONClient {
+public class ExampleSender extends RelayClient {
+    
+    public static void main(String[] args) {
+        ExampleSender exampleSender = new ExampleSender();
+        RelayConfigLoader configLoader = new RelayConfigLoader();
+        try {
+            configLoader.loadClientConfig();
+            exampleSender.configAndConnect(configLoader.getHost(), configLoader.getPort());
+        } catch (IOException ex) {
+            System.out.println("Exception starting example sender:" + ex.getMessage());
+        }
+    }
     
     public void connect() throws IOException {
         RelayConfigLoader configLoader = new RelayConfigLoader();
@@ -22,7 +35,7 @@ public class ExampleSender extends RelayJSONClient {
     }
     
     @Override
-    public void handleJSON(RelayMessage jw, MessageEvent e) {
+    public void handleMessage(RelayMessage jw, MessageEvent e) {
         throw new UnsupportedOperationException("Example Sender received data. It should not subscribe to channels.");
     }
 
@@ -37,4 +50,15 @@ public class ExampleSender extends RelayJSONClient {
     public void onFailedConnection() {
         System.out.println("TestSender failed to connect to server.");
     }
+    
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
+        String tos = e.getCause().toString();
+        String res = e.getCause().getMessage();
+        String loc = e.getCause().getLocalizedMessage();
+        System.out.println("got exception:" + tos);
+        System.out.println("got exception:" + res);
+        System.out.println("got exception:" + loc);
+    }
+    
 }

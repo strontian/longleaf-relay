@@ -1,8 +1,12 @@
 package strawn.longleaf.relay.examples;
 
-import strawn.longleaf.relay.client.RelayJSONClient;
+import java.io.IOException;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ExceptionEvent;
+import strawn.longleaf.relay.client.RelayClient;
 import org.jboss.netty.channel.MessageEvent;
 import strawn.longleaf.relay.messages.RelayMessage;
+import strawn.longleaf.relay.util.RelayConfigLoader;
 
 /**
  *
@@ -12,13 +16,24 @@ import strawn.longleaf.relay.messages.RelayMessage;
  * it receives a message.
  * 
  */
-public class ExampleReceiver extends RelayJSONClient {
+public class ExampleReceiver extends RelayClient {
 
+    public static void main(String[] args) {
+        RelayConfigLoader configLoader = new RelayConfigLoader();
+        ExampleReceiver exampleReceiver = new ExampleReceiver();
+        try {
+            configLoader.loadClientConfig();
+            exampleReceiver.configAndConnect(configLoader.getHost(), configLoader.getPort());
+        } catch (IOException ex) {
+            System.out.println("Exception starting example receiver:" + ex.getMessage());
+        }
+    }
+    
     @Override
-    public void handleJSON(RelayMessage relayMessage, MessageEvent e) {
+    public void handleMessage(RelayMessage relayMessage, MessageEvent e) {
         System.out.println("Got JSON, channel:" + relayMessage.channelName + ", type:" + relayMessage.messageType + ", payload:" + relayMessage.payload);
     }
-
+    
     public void onConnection() {
         System.out.println("ExampleReceiver receiver connected!");
         System.out.println("Subscribing to channel:'example'");

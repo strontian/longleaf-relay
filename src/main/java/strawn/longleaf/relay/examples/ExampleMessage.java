@@ -1,5 +1,8 @@
 package strawn.longleaf.relay.examples;
 
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ExceptionEvent;
+
 /**
  * This is a POJO, used to demonstrate sending an object as JSON in the examples
  * 

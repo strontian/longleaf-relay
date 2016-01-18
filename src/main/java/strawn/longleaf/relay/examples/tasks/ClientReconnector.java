@@ -19,7 +19,6 @@ public class ClientReconnector extends TimerTask {
     @Override
     public void run() {
         if(!c.isConnected()) {
-            //System.out.println("Attempting to connect...");
             boolean status = c.reconnect();
             if(status) {
                 System.out.println("Connection succeeded, subbing data");

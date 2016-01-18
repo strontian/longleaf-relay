@@ -1,7 +1,7 @@
 package strawn.longleaf.relay.importclient;
 
 import strawn.longleaf.relay.messages.RelayMessage;
-import strawn.longleaf.relay.client.RelayJSONClient;
+import strawn.longleaf.relay.client.RelayClient;
 import strawn.longleaf.relay.exceptions.AlreadySubscribedException;
 import strawn.longleaf.relay.exceptions.DataNotFoundException;
 import com.google.gson.Gson;
@@ -15,7 +15,7 @@ import org.jboss.netty.channel.MessageEvent;
  *
  * @author David Strawn
  */
-public class ChannelDataCollectorClient extends RelayJSONClient {
+public class ChannelDataCollectorClient extends RelayClient {
     
     Map<String, ChannelDataCollection> data;
     Gson g;
@@ -38,7 +38,7 @@ public class ChannelDataCollectorClient extends RelayJSONClient {
     }
     
     @Override
-    public void handleJSON(RelayMessage jw, MessageEvent e) {
+    public void handleMessage(RelayMessage jw, MessageEvent e) {
         ChannelDataCollection hc = data.get(jw.channelName);
         if(jw.messageType.equals("END_REFRESH")) {
             hc.completed = true;

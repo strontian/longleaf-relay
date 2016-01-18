@@ -1,8 +1,7 @@
 package strawn.longleaf.relay.client;
 
-import strawn.longleaf.relay.netty.JSONHandler;
+import strawn.longleaf.relay.netty.RelayMessageHandler;
 import strawn.longleaf.relay.netty.JSONPipelineFactory;
-import strawn.longleaf.relay.netty.JSONPublisher;
 import strawn.longleaf.relay.messages.RelayMessage;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executor;
@@ -20,7 +19,7 @@ import strawn.longleaf.relay.messages.RelayMessageType;
  * Clients that want to send data to or receive data from the server should extend this class.
  * 
  */
-public abstract class RelayJSONClient extends JSONHandler implements JSONPublisher, Connector {
+public abstract class RelayClient extends RelayMessageHandler implements Connector {
     
     protected ClientBootstrap bootstrap;
     protected Channel publishChannel;
@@ -32,7 +31,7 @@ public abstract class RelayJSONClient extends JSONHandler implements JSONPublish
      * @param boss
      * @param work 
      */
-    public RelayJSONClient(Executor boss, Executor work) {
+    public RelayClient(Executor boss, Executor work) {
         bootstrap = new ClientBootstrap(new NioClientSocketChannelFactory(boss, work, 1));
         bootstrap.setPipelineFactory(new JSONPipelineFactory(this));
         bootstrap.setOption("tcpNoDelay", "true");
@@ -40,13 +39,14 @@ public abstract class RelayJSONClient extends JSONHandler implements JSONPublish
         bootstrap.setOption("keepAlive", true);
     }
     
-    public RelayJSONClient() {
+    public RelayClient() {
         bootstrap = new ClientBootstrap(new NioClientSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool(), 1));
         bootstrap.setPipelineFactory(new JSONPipelineFactory(this));
         bootstrap.setOption("tcpNoDelay", "true");
         bootstrap.setOption("receiveBufferSize", 1048576);
         bootstrap.setOption("keepAlive", true);
     }
+    
     /**
      * Attempts to reconnect to the server
      * 
@@ -63,6 +63,7 @@ public abstract class RelayJSONClient extends JSONHandler implements JSONPublish
         }
         return success;
     }
+    
     /**
      * Disconnects from the server
      */
@@ -70,6 +71,7 @@ public abstract class RelayJSONClient extends JSONHandler implements JSONPublish
         publishChannel.close();
         bootstrap.releaseExternalResources();
     }
+    
     /**
      * Connects to the server
      * 
@@ -98,6 +100,7 @@ public abstract class RelayJSONClient extends JSONHandler implements JSONPublish
         String jString = g.toJson(jw);
         publishChannel.write(jString + "\n");
     }
+    
     /**
      * Publishes data as a String
      * 
