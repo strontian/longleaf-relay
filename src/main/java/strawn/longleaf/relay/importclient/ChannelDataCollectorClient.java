@@ -80,7 +80,7 @@ public class ChannelDataCollectorClient extends RelayClient {
         }
         hc = new ChannelDataCollection(channelName);
         data.put(channelName, hc);
-        subscribeToChannel(channelName);
+        subscribeChannel(channelName);
     }
     
     public boolean collectionComplete() {

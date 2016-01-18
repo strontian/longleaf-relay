@@ -34,7 +34,7 @@ import strawn.longleaf.relay.messages.RelayMessage;
  */
 public abstract class RelayMessageHandler extends SimpleChannelUpstreamHandler {
     
-    protected Gson g;
+    protected Gson gson;
     
     /**
      * 
@@ -46,13 +46,13 @@ public abstract class RelayMessageHandler extends SimpleChannelUpstreamHandler {
     public abstract void handleMessage(RelayMessage relayMessage, MessageEvent e);
     
     public RelayMessageHandler() {
-        g = new Gson();
+        gson = new Gson();
     }
     
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
         String s = (String)e.getMessage();
-        handleMessage(g.fromJson(s, RelayMessage.class), e);
+        handleMessage(gson.fromJson(s, RelayMessage.class), e);
     }
     
 }

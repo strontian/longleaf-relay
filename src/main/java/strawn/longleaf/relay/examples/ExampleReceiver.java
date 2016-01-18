@@ -53,7 +53,7 @@ public class ExampleReceiver extends RelayClient {
     public void onConnection() {
         System.out.println("ExampleReceiver receiver connected!");
         System.out.println("Subscribing to channel:'example'");
-        subscribeToChannel("example");
+        subscribeChannel("example");
     }
 
     public void onFailedConnection() {

@@ -225,7 +225,7 @@ public class RelayServer extends RelayMessageHandler {
     
     protected String getEndRefreshString(String key) {
         RelayMessage jw = getEndRefreshMessage(key);
-        String s = g.toJson(jw);
+        String s = gson.toJson(jw);
         return s + "\n";
     }
 

@@ -112,12 +112,12 @@ public abstract class RelayClient extends RelayMessageHandler implements Connect
      * @param channelName the channel to publish to
      */
     public void publishJSON(Object object, String channelName) {
-        String s = g.toJson(object);
+        String s = gson.toJson(object);
         RelayMessage jw = new RelayMessage();
         jw.channelName = channelName;
         jw.messageType = RelayMessageType.DATA;
         jw.payload = s;
-        String jString = g.toJson(jw);
+        String jString = gson.toJson(jw);
         publishChannel.write(jString + "\n");
     }
     
@@ -132,7 +132,7 @@ public abstract class RelayClient extends RelayMessageHandler implements Connect
         jw.channelName = channelName;
         jw.messageType = RelayMessageType.DATA;
         jw.payload = toPublish;
-        String jString = g.toJson(jw);
+        String jString = gson.toJson(jw);
         publishChannel.write(jString + "\n");
     }
     
@@ -144,14 +144,14 @@ public abstract class RelayClient extends RelayMessageHandler implements Connect
      * @param messageKey
      * @param channelName the channel to publish to
      */
-    public void publishJSONMap(Object object, String messageKey, String channelName) {
-        String s = g.toJson(object);
+    public void publishJSONMap(Object object, String channelName, String messageKey) {
+        String s = gson.toJson(object);
         RelayMessage jw = new RelayMessage();
         jw.channelName = channelName;
         jw.messageType = RelayMessageType.DATA_MAP;
         jw.payload = s;
         jw.messageKey = messageKey;
-        String jString = g.toJson(jw);
+        String jString = gson.toJson(jw);
         publishChannel.write(jString + "\n");
     }
     
@@ -162,13 +162,13 @@ public abstract class RelayClient extends RelayMessageHandler implements Connect
      * @param messageKey the key of the message
      * @param channelName 
      */
-    public void publishStringMap(String toPublish, String messageKey, String channelName) {
+    public void publishStringMap(String toPublish, String channelName, String messageKey) {
         RelayMessage jw = new RelayMessage();
         jw.channelName = channelName;
         jw.messageType = RelayMessageType.DATA_MAP;
         jw.payload = toPublish;
         jw.messageKey = messageKey;
-        String jString = g.toJson(jw);
+        String jString = gson.toJson(jw);
         publishChannel.write(jString + "\n");
     }
     
@@ -184,7 +184,7 @@ public abstract class RelayClient extends RelayMessageHandler implements Connect
         jw.channelName = channelName;
         jw.messageType = RelayMessageType.BROADCAST;
         jw.payload = toBroadcast;
-        String jString = g.toJson(jw);
+        String jString = gson.toJson(jw);
         publishChannel.write(jString + "\n");
     }
     
@@ -192,12 +192,12 @@ public abstract class RelayClient extends RelayMessageHandler implements Connect
      * Subscribes to a channel
      * @param channelName - the name of the channel to subscribe
      */
-    public void subscribeToChannel(String channelName) {
+    public void subscribeChannel(String channelName) {
         RelayMessage relayMessage = new RelayMessage();
         relayMessage.channelName = channelName;
         relayMessage.messageType = RelayMessageType.SUBSCRIBE;
         relayMessage.payload = null;
-        String jString = g.toJson(relayMessage);
+        String jString = gson.toJson(relayMessage);
         publishChannel.write(jString + "\n");
     }
     
@@ -205,12 +205,12 @@ public abstract class RelayClient extends RelayMessageHandler implements Connect
      * Subscribes to a map channel
      * @param channelName - the name of the map channel to subscribe
      */
-    public void subscribeToMapChannel(String channelName) {
+    public void subscribeMapChannel(String channelName) {
         RelayMessage relayMessage = new RelayMessage();
         relayMessage.channelName = channelName;
         relayMessage.messageType = RelayMessageType.SUBSCRIBE_MAP;
         relayMessage.payload = null;
-        String jString = g.toJson(relayMessage);
+        String jString = gson.toJson(relayMessage);
         publishChannel.write(jString + "\n");
     }
     
@@ -224,7 +224,7 @@ public abstract class RelayClient extends RelayMessageHandler implements Connect
         relayMessage.channelName = channelName;
         relayMessage.messageType = RelayMessageType.UNSUBSCRIBE;
         relayMessage.payload = null;
-        String jString = g.toJson(relayMessage);
+        String jString = gson.toJson(relayMessage);
         publishChannel.write(jString + "\n");
     }
     
@@ -238,7 +238,7 @@ public abstract class RelayClient extends RelayMessageHandler implements Connect
         relayMessage.channelName = channelName;
         relayMessage.messageType = RelayMessageType.UNSUBSCRIBE_MAP;
         relayMessage.payload = null;
-        String jString = g.toJson(relayMessage);
+        String jString = gson.toJson(relayMessage);
         publishChannel.write(jString + "\n");
     }
     
@@ -251,7 +251,7 @@ public abstract class RelayClient extends RelayMessageHandler implements Connect
         relayMessage.channelName = channelName;
         relayMessage.messageType = RelayMessageType.FLUSH;
         relayMessage.payload = null;
-        String asJSON = g.toJson(relayMessage);
+        String asJSON = gson.toJson(relayMessage);
         publishChannel.write(asJSON + "\n");
     }
     
@@ -264,7 +264,7 @@ public abstract class RelayClient extends RelayMessageHandler implements Connect
         relayMessage.channelName = channelName;
         relayMessage.messageType = RelayMessageType.FLUSH_MAP;
         relayMessage.payload = null;
-        String asJSON = g.toJson(relayMessage);
+        String asJSON = gson.toJson(relayMessage);
         publishChannel.write(asJSON + "\n");
     }
     
