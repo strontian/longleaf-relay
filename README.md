@@ -8,7 +8,7 @@ Messages are stored on the server in channels. After subscribing to a channel, a
 
 ## Example Usage
 
-The easiest way to write a client is to extend the abstract class RelayClient. This client is can subscribe to channels and publish messages.
+The easiest way to write a client is to extend the abstract class RelayClient. This client can subscribe to channels and publish messages.
 ```java
 public class ExampleClient extends RelayClient() {
 
