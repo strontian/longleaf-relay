@@ -22,10 +22,14 @@ The client:
 
 ## Example Usage
 
-The easiest way to write a client is to extend the abstract class RelayClient. This client can subscribe to channels and publish messages.
+The easiest way to write a client is to extend the abstract class RelayClient: 
+
 ```java
 public class ExampleClient extends RelayClient() {
-
+  @Override
+  handleMessage(RelayMessage relayMessage, MessageEvent e) {
+  
+  }
 }
 
 ExampleClient exampleClient = new ExampleClient();
@@ -76,7 +80,7 @@ public class ExampleClient extends RelayClient {
     System.out.println(relayMessage.payload);
     //if the publishObject method was used, the object can be decoded like this:
     ExampleMessage example = gson.fromJson(relayMessage.payload, ExampleMessage.class);
-    //gson instance is provided by the class RelayMessageHandler, which RelayClient Extends
+    //gson instance is provided by RelayMessageHandler(a superclass of RelayClient)
   }
 
 }
