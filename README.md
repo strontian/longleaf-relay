@@ -157,6 +157,9 @@ exampleClient.flushMapChannel(exampleChannelName);
 
 Data from a map channel will not necessarily arrive in the order received upon subscription
 
+## Documentation
+
+Javadocs can be found at: http://strontian.github.io/longleaf-relay/
 
 ## License
 
