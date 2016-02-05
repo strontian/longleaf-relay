@@ -28,7 +28,7 @@ The easiest way to write a client is to extend the abstract class RelayClient:
 public class ExampleClient extends RelayClient() {
   @Override
   handleMessage(RelayMessage relayMessage, MessageEvent e) {
-  
+    //this is invoked each time the client receives a message from the server  
   }
 }
 
