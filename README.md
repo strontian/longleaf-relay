@@ -16,7 +16,7 @@ The client:
 
   1. can subscribe to any channel, channels are keyed using a string
   2. once subscribed, a client will immediately receive all messages currently in the channel
-  3.  while connected, will receive any new messages sent to the channel
+  3. while connected, will receive any new messages sent to the channel
   4. can send messages to any channel, whether or not they are subscribed to that channel
   5. can delete all messages in a channel
 
@@ -118,15 +118,16 @@ Client and server configuration are located in resources/clientconfig.properties
 
 ## Motivation
   
-  The main advantage of longleaf-relay is the is the flexibility if provides to the clients. 
+The main advantage of longleaf-relay is the is the flexibility if provides to the clients. 
   
-  Many producers of data can publish to the same channel, making it easy to aggregate messages from many sources
+Many producers of data can publish to the same channel, making it easy to aggregate messages from many sources
   
-  Publishers and receivers do not have to maintain direct a connection to one another. This provides some advantages:
-    1. Publishers do not have to worry about persisting a connection. 
-    2. Publishers and receivers do not have to have fixed IP addresses, only the server does
-    3. Receivers can receive messages sent during a time they were not connected
-    4. If the publisher and receiver are both restricted by complicated or restrictive network architecture, they can use an easier-to-access public server to share data 
+Publishers and receivers do not have to maintain direct a connection to one another. This provides some advantages:
+  
+  1. Publishers do not have to worry about persisting a connection. 
+  2. Publishers and receivers do not have to have fixed IP addresses, only the server does
+  3. Receivers can receive messages sent during a time they were not connected
+  4. If the publisher and receiver are both restricted by complicated or restrictive network architecture, they can use an easier-to-access public server to share data 
 
 ## Map Channels
 
