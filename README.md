@@ -46,8 +46,8 @@ exampleClient.subscribeToChannel("exampleChannel");
 ```
 To publish a message to a channel as a String:
 ```java
-String toPublish = "example";
-exampleClient.publishString(toPublish, channelName);
+String toPublish = "exampleMessage";
+exampleClient.publishString(toPublish, "exampleChannel");
 ```
 
 Java objects can be encoded as JSON and sent as messages, a powerful way to build sophisticated client behavior:
