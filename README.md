@@ -16,7 +16,7 @@ The client:
 
   1. can subscribe to any channel, channels are keyed using a string
   2. once subscribed, a client will immediately receive all messages currently in the channel
-  3  while connected, will receive any new messages sent to the channel
+  3.  while connected, will receive any new messages sent to the channel
   4. can send messages to any channel, whether or not they are subscribed to that channel
   5. can delete all messages in a channel
 
