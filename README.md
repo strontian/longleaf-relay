@@ -2,9 +2,22 @@
 
 ##Synopsis 
 
-longleaf-relay is a message relay framework written in Java. The framework consists of a central server, to which multiple clients can connect to publish and receive data.
+longleaf-relay is a message broker written in Java. It consists of a server implementation and a client which the user extends with their own implementation.
 
-Messages are stored on the server in channels. After subscribing to a channel, a client will receive all messages previously sent to the channel in order. It will then receive a message of type END_REFRESH. While connected, the client will receive any further messages sent to the channel. Multiple clients can subscribe to the same channel. Clients can also publish messages to any channel, with or without being subscribed.
+The server:
+
+  1. stores all received messages in 'channels'
+  2. allows clients to connect
+  3. allows clients to subscribe to channels
+  4. publishes all stored messages in a channel to new subscribers(messages are sent in the order the were received)
+  5. publishes any new message in a channel to existing subscribers
+
+The client:
+
+  1. can subscribe to any channel. Channels are keyed with a string
+  2. once subscribed, a client will receive all old messages immediately, and any new messages at the time they are sent
+  2. can send messages to any channel, whether or not they are subscribed to that channel
+  3. can delete all messages in a channel
 
 ## Example Usage
 
@@ -103,20 +116,20 @@ Client and server configuration are located in resources/clientconfig.properties
 
 
 ## Motivation
-
-  The main advantage of longleaf-relay is the is the flexibility if provides to the clients. 
-
-  Messages from many publishers are aggregated on the server, so a single receiving client can get messages from many different places. 
   
-  Receivers don't have to be connected at the time a message is sent to receive it. 
-
-  Publishers and receivers also do not have to maintain a connection to one another. They can connect and disconnect from the server at will. 
-
- Another advantage is that when two clients are both behind network configuration that make it difficult for them to connect to each other, or if they do not have fixed IP addresses, they can use a centrally located server to communicate.
+  The main advantage of longleaf-relay is the is the flexibility if provides to the clients. 
+  
+  Many producers of data can publish to the same channel, making it easy to aggregate messages from many sources
+  
+  Publishers and receivers do not have to maintain direct a connection to one another. This provides some advantages:
+    1. Publishers do not have to worry about persisting a connection. 
+    2. Publishers and receivers do not have to have fixed IP addresses, only the server does
+    3. Receivers can receive messages sent during a time they were not connected
+    4. If the publisher and receiver are both restricted by complicated or restrictive network architecture, they can use an easier-to-access public server to share data 
 
 ## Map Channels
 
-A second paradigm for representing channel data is available through map channels. Messages in a map channel are represented by a map. In addition to providing a channel name when publishing data, you must also provide a message key. Any data subsequently published in the same channel and same key will replace previous data sent. 
+A second paradigm for representing channel data is available through map channels. Messages in a map channel are stored in the server in a map. A publishing client, must provide both a channel key, and a message key, which uniquely indentify a single message stored on the server. Any data subsequently published in the same channel and same key will replace previous data sent. 
 
 There are analogous functions to most of the functions for working with regular channels:
 
