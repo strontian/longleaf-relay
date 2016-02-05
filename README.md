@@ -124,14 +124,13 @@ Many producers of data can publish to the same channel, making it easy to aggreg
   
 Publishers and receivers do not have to maintain direct a connection to one another. This provides some advantages:
   
-  1. Publishers do not have to worry about persisting a connection. 
-  2. Publishers and receivers do not have to have fixed IP addresses, only the server does
-  3. Receivers can receive messages sent during a time they were not connected
-  4. If the publisher and receiver are both restricted by complicated or restrictive network architecture, they can use an easier-to-access public server to share data 
+  1. Publishers and receivers need not have fixed IP addresses, only the server does
+  2. Receivers can receive messages sent during a time they were not connected
+  3. The publisher and receiver can circumvent complicated or restrictive network architecture by using the server as a relay 
 
 ## Map Channels
 
-A second paradigm for representing channel data is available through map channels. Messages in a map channel are stored in the server in a map. A publishing client, must provide both a channel key, and a message key, which uniquely indentify a single message stored on the server. Any data subsequently published in the same channel and same key will replace previous data sent. 
+A second paradigm for representing channel data is available through map channels. Messages in a map channel are represented on the server as a map. A publishing client must provide both a channel key and a message key, which together uniquely indentify a single message stored on the server. Any data subsequently published in the same channel and same key will replace previous data sent. 
 
 There are analogous functions to most of the functions for working with regular channels:
 
